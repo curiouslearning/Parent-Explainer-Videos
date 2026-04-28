@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/not-all-screens-video/"
+title = "Not All Screens Are Equal"
+version = "1.0.0"
+id = "artifacts/not-all-screens-video"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/not-all-screens-video/" ]
+localPort = 24274
+
+[services.development]
+run = "pnpm --filter @workspace/not-all-screens-video run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/not-all-screens-video", "run", "build" ]
+publicDir = "artifacts/not-all-screens-video/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24274"
+BASE_PATH = "/not-all-screens-video/"

@@ -90,6 +90,42 @@ uri = "file://artifacts/how-children-read-video/public/images/s7_close.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "0LBR3sMtX6ymCIf3o-IYB"
+uri = "file://artifacts/not-all-screens-video/public/images/s1_opening.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "zJGrZY8e2WAyvTiSWyGYa"
+uri = "file://artifacts/not-all-screens-video/public/images/s2_context.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "t4ZMRoAoywEnZdw8f_kd2"
+uri = "file://artifacts/not-all-screens-video/public/images/s3_research.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jGUKKF8_A-n4gPM0T7YlA"
+uri = "file://artifacts/not-all-screens-video/public/images/s4_opportunity.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Q_bcLdtyWXTP0BkOScMVy"
+uri = "file://artifacts/not-all-screens-video/public/images/s5_active.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "az86GfInfUS5PfWDC2Bj5"
+uri = "file://artifacts/not-all-screens-video/public/images/s6_close.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "UE0wHmp5RBZwnmUXbY6px"
 uri = "file://artifacts/language-matters-video/public/images/family.jpg"

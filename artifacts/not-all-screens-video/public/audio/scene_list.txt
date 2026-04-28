@@ -1,0 +1,6 @@
+file '/home/runner/workspace/artifacts/not-all-screens-video/public/audio/s1_opening.mp3'
+file '/home/runner/workspace/artifacts/not-all-screens-video/public/audio/s2_context.mp3'
+file '/home/runner/workspace/artifacts/not-all-screens-video/public/audio/s3_research.mp3'
+file '/home/runner/workspace/artifacts/not-all-screens-video/public/audio/s4_opportunity.mp3'
+file '/home/runner/workspace/artifacts/not-all-screens-video/public/audio/s5_active.mp3'
+file '/home/runner/workspace/artifacts/not-all-screens-video/public/audio/s6_close.mp3'
