@@ -19,8 +19,8 @@ const VIDEOS: Video[] = [
     title: 'Welcome to the Series',
     description: 'An introduction from Curious Learning about how this video series can help you support your child\'s literacy journey.',
     type: 'youtube',
-    youtubeId: '',
-    thumbnail: '',
+    youtubeId: 'o82z2CBF76s',
+    thumbnail: 'https://img.youtube.com/vi/o82z2CBF76s/maxresdefault.jpg',
     duration: '',
   },
   {
