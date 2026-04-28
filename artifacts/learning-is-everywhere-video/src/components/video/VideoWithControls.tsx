@@ -11,6 +11,14 @@ function getSceneAudioSrc(sceneKey: string): string {
   return `${import.meta.env.BASE_URL}audio/${sceneKey}.mp3`;
 }
 
+function playWhenReady(audio: HTMLAudioElement): void {
+  if (audio.readyState >= 3) {
+    audio.play().catch(() => {});
+  } else {
+    audio.addEventListener('canplay', () => { audio.play().catch(() => {}); }, { once: true });
+  }
+}
+
 interface ControlBarProps {
   visible: boolean;
   collapsed: boolean;
@@ -203,12 +211,14 @@ export default function VideoWithControls({ autoplay = false, onEnded }: VideoWi
     const audio = audioRef.current;
     if (!audio) return;
     audio.src = getSceneAudioSrc(clean);
-    audio.currentTime = 0;
+    audio.load();
     if (playing) {
-      audio.play().catch(() => {});
+      playWhenReady(audio);
     } else if (autoplay && !autoplayDoneRef.current) {
       autoplayDoneRef.current = true;
-      audio.play().then(() => setPlaying(true)).catch(() => {});
+      audio.addEventListener('canplay', () => {
+        audio.play().then(() => setPlaying(true)).catch(() => {});
+      }, { once: true });
     }
   }, [onSceneChange, playing, autoplay]);
 
@@ -218,9 +228,9 @@ export default function VideoWithControls({ autoplay = false, onEnded }: VideoWi
     const audio = audioRef.current;
     if (audio) {
       audio.src = getSceneAudioSrc(key);
-      audio.currentTime = 0;
+      audio.load();
       if (playing) {
-        audio.play().catch(() => {});
+        playWhenReady(audio);
       }
     }
     jumpToScene(index);
