@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/five-things-video/"
+title = "Five Things You Already Do That Help Your Child Learn"
+version = "1.0.0"
+id = "artifacts/five-things-video"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/five-things-video/" ]
+localPort = 24399
+
+[services.development]
+run = "pnpm --filter @workspace/five-things-video run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/five-things-video", "run", "build" ]
+publicDir = "artifacts/five-things-video/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24399"
+BASE_PATH = "/five-things-video/"

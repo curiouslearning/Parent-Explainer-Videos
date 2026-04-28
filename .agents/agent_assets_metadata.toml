@@ -162,6 +162,48 @@ uri = "file://artifacts/learning-is-everywhere-video/public/images/s6_close.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "RlvWJu8OpyPfgXO0zN1wR"
+uri = "file://artifacts/five-things-video/public/images/s1_opening.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "v2cWusbRjJmgbb1-3xVNY"
+uri = "file://artifacts/five-things-video/public/images/s2_talk.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "4qGn-DR8oyI6jvHPevXSC"
+uri = "file://artifacts/five-things-video/public/images/s3_questions.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "aGiFUJAUhMw_1njQMJaSj"
+uri = "file://artifacts/five-things-video/public/images/s4_stories.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ElyVBphLd_PqzqqEJDLqK"
+uri = "file://artifacts/five-things-video/public/images/s5_teach.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "3uyXnycqCbo5tMQtH5yZb"
+uri = "file://artifacts/five-things-video/public/images/s6_practise.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Gb_RfoIT9fTxNGneqFvSV"
+uri = "file://artifacts/five-things-video/public/images/s7_close.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "UE0wHmp5RBZwnmUXbY6px"
 uri = "file://artifacts/language-matters-video/public/images/family.jpg"
