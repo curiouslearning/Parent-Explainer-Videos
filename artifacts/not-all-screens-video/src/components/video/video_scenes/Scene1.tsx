@@ -8,7 +8,7 @@ export function Scene1() {
   useEffect(() => {
     const timers = [
       setTimeout(() => setPhase(1), 800),
-      setTimeout(() => setPhase(2), 12000),
+      setTimeout(() => setPhase(2), 22000),
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);
@@ -26,7 +26,7 @@ export function Scene1() {
         className="absolute inset-0"
         initial={{ scale: 1.0 }}
         animate={{ scale: 1.1 }}
-        transition={{ duration: 27, ease: 'linear' }}
+        transition={{ duration: 45, ease: 'linear' }}
       >
         <img
           src={`${import.meta.env.BASE_URL}images/s1_opening.png`}

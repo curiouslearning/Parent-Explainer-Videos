@@ -9,7 +9,7 @@ import { Scene5 } from './video_scenes/Scene5';
 import { Scene6 } from './video_scenes/Scene6';
 
 export const SCENE_DURATIONS: Record<string, number> = {
-  s1_opening: 26712,
+  s1_opening: 44664,
   s2_context: 51408,
   s3_research: 68256,
   s4_opportunity: 54960,
