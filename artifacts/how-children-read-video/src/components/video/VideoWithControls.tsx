@@ -170,6 +170,7 @@ function ControlBar({
 
 export default function VideoWithControls() {
   const isIframed = typeof window !== 'undefined' && window.self !== window.top;
+  const isAutoplay = isIframed && new URLSearchParams(window.location.search).get('autoplay') === '1';
 
   const {
     sceneKeys,
@@ -233,10 +234,28 @@ export default function VideoWithControls() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    const onEnded = () => setPlaying(false);
+    const onEnded = () => {
+      setPlaying(false);
+      window.parent?.postMessage({ type: 'VIDEO_ENDED' }, '*');
+    };
     audio.addEventListener('ended', onEnded);
     return () => audio.removeEventListener('ended', onEnded);
   }, []);
+
+  useEffect(() => {
+    if (!isAutoplay || !isIframed) return;
+    const audio = audioRef.current;
+    if (!audio) return;
+    const tryPlay = () => {
+      audio.play().then(() => setPlaying(true)).catch(() => {});
+    };
+    if (audio.readyState >= 3) {
+      tryPlay();
+    } else {
+      audio.addEventListener('canplaythrough', tryPlay, { once: true });
+    }
+    return () => audio.removeEventListener('canplaythrough', tryPlay);
+  }, [isAutoplay, isIframed]);
 
   const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse') setHovering(true);

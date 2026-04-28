@@ -1,6 +1,6 @@
 kind = "video"
-previewPath = "/learning-is-everywhere-video/"
-title = "Learning Is Everywhere"
+previewPath = "/parent-video-hub/"
+title = "Parent Explainer Videos"
 version = "1.0.0"
 id = "artifacts/learning-is-everywhere-video"
 router = "path"
@@ -11,7 +11,7 @@ version = "1.0.0"
 
 [[services]]
 name = "web"
-paths = [ "/learning-is-everywhere-video/" ]
+paths = [ "/parent-video-hub/" ]
 localPort = 23165
 
 [services.development]
@@ -28,4 +28,4 @@ to = "/index.html"
 
 [services.env]
 PORT = "23165"
-BASE_PATH = "/learning-is-everywhere-video/"
+BASE_PATH = "/parent-video-hub/"

@@ -164,6 +164,7 @@ function ControlBar({
 
 export default function VideoWithControls() {
   const isIframed = typeof window !== 'undefined' && window.self !== window.top;
+  const isAutoplay = isIframed && new URLSearchParams(window.location.search).get('autoplay') === '1';
 
   const {
     sceneKeys,
@@ -179,7 +180,7 @@ export default function VideoWithControls() {
   } = useSceneControls(SCENE_DURATIONS);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(isAutoplay);
   const [muted, setMuted] = useState(false);
 
   // Track current scene key so we can detect changes
@@ -247,9 +248,11 @@ export default function VideoWithControls() {
     const audio = audioRef.current;
     if (!audio) return;
     const onEnded = () => {
-      // Only stop playing state if we're on the last scene
       const isLastScene = activeIndex === sceneKeys.length - 1;
-      if (isLastScene) setPlaying(false);
+      if (isLastScene) {
+        setPlaying(false);
+        window.parent?.postMessage({ type: 'VIDEO_ENDED' }, '*');
+      }
     };
     audio.addEventListener('ended', onEnded);
     return () => audio.removeEventListener('ended', onEnded);

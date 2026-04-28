@@ -60,6 +60,7 @@ function ProgressSegments({
 
 export default function VideoWithControls() {
   const isIframed = typeof window !== 'undefined' && window.self !== window.top;
+  const isAutoplay = isIframed && new URLSearchParams(window.location.search).get('autoplay') === '1';
 
   const {
     sceneKeys, activeIndex, locked, mountKey, tick,
@@ -72,6 +73,7 @@ export default function VideoWithControls() {
   const [muted, setMuted] = useState(false);
   const [audioReady, setAudioReady] = useState(false);
   const lastSceneKeyRef = useRef<string>('');
+  const autoplayDoneRef = useRef(false);
 
   // Load audio on scene change
   useEffect(() => {
@@ -94,7 +96,7 @@ export default function VideoWithControls() {
     };
   }, [activeIndex, isIframed, playing]);
 
-  // Handle audio end — only advance or stop at last scene
+  // Handle audio end — stop at last scene and notify hub
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -102,11 +104,19 @@ export default function VideoWithControls() {
       const isLast = activeIndex === SCENE_KEYS.length - 1;
       if (isLast) {
         setPlaying(false);
+        window.parent?.postMessage({ type: 'VIDEO_ENDED' }, '*');
       }
     };
     audio.addEventListener('ended', onEnded);
     return () => audio.removeEventListener('ended', onEnded);
   }, [activeIndex]);
+
+  // Auto-start when audio is ready on first load (hub autoplay)
+  useEffect(() => {
+    if (!isAutoplay || autoplayDoneRef.current || !audioReady) return;
+    autoplayDoneRef.current = true;
+    setPlaying(true);
+  }, [isAutoplay, audioReady]);
 
   // Sync play/pause with audio element
   useEffect(() => {
