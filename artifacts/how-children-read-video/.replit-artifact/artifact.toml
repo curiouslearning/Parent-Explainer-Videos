@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/how-children-read-video/"
+title = "How Children Learn to Read"
+version = "1.0.0"
+id = "artifacts/how-children-read-video"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/how-children-read-video/" ]
+localPort = 22881
+
+[services.development]
+run = "pnpm --filter @workspace/how-children-read-video run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/how-children-read-video", "run", "build" ]
+publicDir = "artifacts/how-children-read-video/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22881"
+BASE_PATH = "/how-children-read-video/"

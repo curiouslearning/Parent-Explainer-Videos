@@ -1,0 +1,7 @@
+file '/home/runner/workspace/artifacts/how-children-read-video/public/audio/s1_opening.mp3'
+file '/home/runner/workspace/artifacts/how-children-read-video/public/audio/s2_pre_reader.mp3'
+file '/home/runner/workspace/artifacts/how-children-read-video/public/audio/s3_feed_monster.mp3'
+file '/home/runner/workspace/artifacts/how-children-read-video/public/audio/s4_early_reader.mp3'
+file '/home/runner/workspace/artifacts/how-children-read-video/public/audio/s5_curious_reader.mp3'
+file '/home/runner/workspace/artifacts/how-children-read-video/public/audio/s6_emerging_reader.mp3'
+file '/home/runner/workspace/artifacts/how-children-read-video/public/audio/s7_close.mp3'

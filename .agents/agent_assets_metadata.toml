@@ -48,6 +48,48 @@ uri = "file://artifacts/language-matters-video/public/images/child_learning.png"
 type = "image"
 title = "African child reading book"
 
+[[generated]]
+id = "SeMJtA-hc7OQS5LL0xnvJ"
+uri = "file://artifacts/how-children-read-video/public/images/s1_opening.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "wT1xRx9kVTStPLlcEV-4O"
+uri = "file://artifacts/how-children-read-video/public/images/s2_pre_reader.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "bIbfgZrXS1cyB3VbIjSNA"
+uri = "file://artifacts/how-children-read-video/public/images/s3_feed_monster.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "_q1-cYBgSWL6bK2teMd46"
+uri = "file://artifacts/how-children-read-video/public/images/s4_early_reader.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "B1MXw2C2gWYWACWjLAT4m"
+uri = "file://artifacts/how-children-read-video/public/images/s5_curious_reader.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "i_jh1cOPNf8htiwNOaA5k"
+uri = "file://artifacts/how-children-read-video/public/images/s6_emerging_reader.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "bJ0JhWg9mlOeDyVB1aLZG"
+uri = "file://artifacts/how-children-read-video/public/images/s7_close.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "UE0wHmp5RBZwnmUXbY6px"
 uri = "file://artifacts/language-matters-video/public/images/family.jpg"
