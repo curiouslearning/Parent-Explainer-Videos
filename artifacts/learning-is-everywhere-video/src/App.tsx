@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import VideoWithControls from '@/components/video/VideoWithControls';
 
 interface Video {
   id: string;
   num: number;
   title: string;
   description: string;
-  type: 'youtube' | 'internal';
+  type: 'youtube' | 'internal' | 'inline';
   youtubeId?: string;
   path?: string;
   thumbnail: string;
@@ -68,10 +69,9 @@ const VIDEOS: Video[] = [
     num: 6,
     title: 'Learning Is Everywhere',
     description: 'Everyday moments are learning opportunities. Discover how to turn ordinary time into something extraordinary.',
-    type: 'youtube',
-    youtubeId: 'o82z2CBF76s',
-    thumbnail: 'https://img.youtube.com/vi/o82z2CBF76s/maxresdefault.jpg',
-    duration: '',
+    type: 'inline',
+    thumbnail: `${import.meta.env.BASE_URL}images/s1_opening.png`,
+    duration: '~4 min',
   },
 ];
 
@@ -359,6 +359,10 @@ function VideoPlayer({
               allowFullScreen
               title={video.title}
             />
+          </div>
+        ) : video.type === 'inline' ? (
+          <div className="w-full h-full">
+            <VideoWithControls autoplay onEnded={onWatched} />
           </div>
         ) : (
           <iframe

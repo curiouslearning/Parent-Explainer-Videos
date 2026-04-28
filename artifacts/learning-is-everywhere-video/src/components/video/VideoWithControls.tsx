@@ -162,8 +162,14 @@ function ControlBar({
   );
 }
 
-export default function VideoWithControls() {
+interface VideoWithControlsProps {
+  autoplay?: boolean;
+  onEnded?: () => void;
+}
+
+export default function VideoWithControls({ autoplay = false, onEnded }: VideoWithControlsProps = {}) {
   const isIframed = typeof window !== 'undefined' && window.self !== window.top;
+  const showControls = isIframed || autoplay;
 
   const {
     sceneKeys,
@@ -181,6 +187,7 @@ export default function VideoWithControls() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
+  const autoplayDoneRef = useRef(false);
 
   const currentAudioKeyRef = useRef<string>(SCENE_KEYS_ORDERED[0]);
 
@@ -199,8 +206,11 @@ export default function VideoWithControls() {
     audio.currentTime = 0;
     if (playing) {
       audio.play().catch(() => {});
+    } else if (autoplay && !autoplayDoneRef.current) {
+      autoplayDoneRef.current = true;
+      audio.play().then(() => setPlaying(true)).catch(() => {});
     }
-  }, [onSceneChange, playing]);
+  }, [onSceneChange, playing, autoplay]);
 
   const jumpTo = useCallback((index: number) => {
     const key = SCENE_KEYS_ORDERED[index];
@@ -241,13 +251,16 @@ export default function VideoWithControls() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    const onEnded = () => {
+    const handleEnded = () => {
       const isLastScene = activeIndex === sceneKeys.length - 1;
-      if (isLastScene) setPlaying(false);
+      if (isLastScene) {
+        setPlaying(false);
+        onEnded?.();
+      }
     };
-    audio.addEventListener('ended', onEnded);
-    return () => audio.removeEventListener('ended', onEnded);
-  }, [activeIndex, sceneKeys.length]);
+    audio.addEventListener('ended', handleEnded);
+    return () => audio.removeEventListener('ended', handleEnded);
+  }, [activeIndex, sceneKeys.length, onEnded]);
 
   const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse') setHovering(true);
@@ -285,10 +298,10 @@ export default function VideoWithControls() {
 
   const barVisible = !collapsed || hovering || tapPinned;
 
-  if (!isIframed) return <VideoTemplate loop={false} />;
+  if (!showControls) return <VideoTemplate loop={false} />;
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full h-full">
       <audio ref={audioRef} preload="auto" />
 
       <VideoTemplate
