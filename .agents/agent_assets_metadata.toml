@@ -204,6 +204,42 @@ uri = "file://artifacts/five-things-video/public/images/s7_close.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "tsSNizRYwLqURJKdNlFrc"
+uri = "file://artifacts/language-matters-video/public/images/s1_opening.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Q3vX1DscI1qYxQIgX6YdB"
+uri = "file://artifacts/language-matters-video/public/images/s2_brain.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "XnHrYOzMN7zg-H-0hxCwT"
+uri = "file://artifacts/language-matters-video/public/images/s3_research.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "YWu1CR5mVp8MZoeYcv7sH"
+uri = "file://artifacts/language-matters-video/public/images/s4_identity.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "CHR_e0oFuyjYen8J7_-hQ"
+uri = "file://artifacts/language-matters-video/public/images/s5_reassurance.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "dZF0SHNC-J5MM0V_C34ho"
+uri = "file://artifacts/language-matters-video/public/images/s6_cta.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "UE0wHmp5RBZwnmUXbY6px"
 uri = "file://artifacts/language-matters-video/public/images/family.jpg"

@@ -1,96 +1,107 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-// Scene 5 (22s): "BUILD THE FOUNDATION FIRST"
+// Scene 5 (24.7s): Reassurance — "Won't this slow down their English?"
 export function Scene5() {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 1000), // Foundation visual builds
-      setTimeout(() => setPhase(2), 12000), // Text reveal
+      setTimeout(() => setPhase(1), 600),
+      setTimeout(() => setPhase(2), 10000),
+      setTimeout(() => setPhase(3), 17000),
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);
 
   return (
-    <motion.div 
-      className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg-light)] overflow-hidden"
+    <motion.div
+      className="absolute inset-0 overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, filter: "blur(10px)" }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      exit={{ opacity: 0, scale: 1.03 }}
+      transition={{ duration: 1.2, ease: 'easeInOut' }}
     >
-      <div className="absolute inset-0 pointer-events-none opacity-5">
-        <motion.img 
-          src={`${import.meta.env.BASE_URL}images/african_pattern.png`} 
+      <motion.div
+        className="absolute inset-0"
+        initial={{ scale: 1.0 }}
+        animate={{ scale: 1.1 }}
+        transition={{ duration: 25, ease: 'linear' }}
+      >
+        <img
+          src={`${import.meta.env.BASE_URL}images/s5_reassurance.png`}
           className="w-full h-full object-cover"
-          animate={{ scale: [1, 1.05], rotate: [0, 2] }}
-          transition={{ duration: 22, ease: "easeOut" }}
-          alt="" 
+          alt="Child confidently reading with parent"
         />
-      </div>
+        <div className="absolute inset-0 bg-gradient-to-l from-[#3D1F0A]/82 via-[#3D1F0A]/28 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#3D1F0A]/50 via-transparent to-transparent" />
+      </motion.div>
 
-      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center pt-12 pb-24">
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase >= 1 ? 0.14 : 0 }}
+        transition={{ duration: 2.5 }}
+        style={{ background: 'radial-gradient(ellipse at 95% 50%, #E8820C, transparent 55%)' }}
+      />
+
+      <div className="absolute right-0 top-0 bottom-0 w-[50%] z-10 flex flex-col justify-center px-12">
         <motion.div
-          className="w-[50vw] h-[40vw] max-w-3xl max-h-2xl mb-8 relative"
-          initial={{ opacity: 0, scale: 0.9, y: 30 }}
-          animate={phase >= 1 ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.9, y: 30 }}
-          transition={{ duration: 1.5, type: "spring", bounce: 0.3 }}
+          className="flex items-center gap-4 mb-4"
+          initial={{ x: 30, opacity: 0 }}
+          animate={phase >= 1 ? { x: 0, opacity: 1 } : {}}
+          transition={{ duration: 1.0, type: 'spring', damping: 24 }}
         >
-          <img 
-            src={`${import.meta.env.BASE_URL}images/house_foundation.png`} 
-            className="w-full h-full object-contain drop-shadow-2xl"
-            alt="House foundation" 
-          />
-          
-          {/* Animated drawing effect over the foundation */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
-             <motion.rect
-                x="20" y="70" width="60" height="20"
-                fill="transparent"
-                stroke="var(--color-secondary)"
-                strokeWidth="2"
-                strokeDasharray="100 100"
-                initial={{ strokeDashoffset: 100, opacity: 0 }}
-                animate={phase >= 1 ? { strokeDashoffset: 0, opacity: 0.8 } : { strokeDashoffset: 100, opacity: 0 }}
-                transition={{ duration: 3, ease: "easeInOut", delay: 1 }}
-             />
-             <motion.rect
-                x="30" y="40" width="40" height="30"
-                fill="transparent"
-                stroke="var(--color-accent)"
-                strokeWidth="2"
-                strokeDasharray="100 100"
-                initial={{ strokeDashoffset: 100, opacity: 0 }}
-                animate={phase >= 1 ? { strokeDashoffset: 0, opacity: 0.8 } : { strokeDashoffset: 100, opacity: 0 }}
-                transition={{ duration: 3, ease: "easeInOut", delay: 3 }}
-             />
-             <motion.polygon
-                points="10,40 50,10 90,40"
-                fill="transparent"
-                stroke="var(--color-primary)"
-                strokeWidth="2"
-                strokeDasharray="150 150"
-                initial={{ strokeDashoffset: 150, opacity: 0 }}
-                animate={phase >= 1 ? { strokeDashoffset: 0, opacity: 0.8 } : { strokeDashoffset: 150, opacity: 0 }}
-                transition={{ duration: 3, ease: "easeInOut", delay: 5 }}
-             />
-          </svg>
+          <div className="w-2.5 h-2.5 rounded-full bg-[#E8820C]" />
+          <p className="text-[2.2vw] text-[#E8820C] font-semibold" style={{ fontFamily: 'var(--font-body)' }}>
+            A common concern
+          </p>
+        </motion.div>
+
+        <motion.p
+          className="text-[2.3vw] text-[#F5EDD6]/70 italic mb-4"
+          style={{ fontFamily: 'var(--font-body)' }}
+          initial={{ x: 20, opacity: 0 }}
+          animate={phase >= 1 ? { x: 0, opacity: 1 } : {}}
+          transition={{ duration: 1.0, delay: 0.1 }}
+        >
+          "Won't this slow down their English?"
+        </motion.p>
+
+        <motion.h2
+          className="text-[4.2vw] font-black text-[#F5EDD6] leading-tight mb-5"
+          style={{ fontFamily: 'var(--font-display)' }}
+          initial={{ x: 20, opacity: 0 }}
+          animate={phase >= 1 ? { x: 0, opacity: 1 } : {}}
+          transition={{ duration: 1.0, delay: 0.2 }}
+        >
+          The evidence says{' '}
+          <span className="text-[#E8820C]">no</span>
+        </motion.h2>
+
+        <motion.div
+          className="border-l-4 border-[#E8820C] pl-5 mb-5"
+          initial={{ opacity: 0, y: 14 }}
+          animate={phase >= 2 ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1.0 }}
+        >
+          <p className="text-[2.0vw] text-[#F5EDD6]/90 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+            Strong mother tongue literacy makes picking up a second language{' '}
+            <span className="text-[#E8820C] font-semibold">easier</span> —
+            because they already understand how reading works.
+          </p>
         </motion.div>
 
         <motion.div
-          className="text-center overflow-hidden"
+          className="bg-[#F5EDD6]/8 border border-[#E8820C]/30 rounded-xl px-6 py-4"
+          initial={{ opacity: 0, y: 14 }}
+          animate={phase >= 3 ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1.0 }}
         >
-          <motion.h2
-            className="text-[6vw] font-black text-[var(--color-primary)] uppercase tracking-tight leading-none"
-            initial={{ opacity: 0, y: "100%", rotateX: -20 }}
-            animate={phase >= 2 ? { opacity: 1, y: 0, rotateX: 0 } : { opacity: 0, y: "100%", rotateX: -20 }}
-            transition={{ type: "spring", damping: 20, stiffness: 80 }}
-            style={{ transformOrigin: "bottom center" }}
-          >
-            BUILD THE <span className="text-[var(--color-secondary)]">FOUNDATION</span> FIRST
-          </motion.h2>
+          <p className="text-[2.0vw] text-[#F5EDD6]/85 leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+            Building a house: you wouldn't skip the foundations to put the roof on faster.{' '}
+            <span className="text-[#E8820C] font-semibold">Strong foundations make everything above more stable.</span>
+          </p>
         </motion.div>
       </div>
     </motion.div>

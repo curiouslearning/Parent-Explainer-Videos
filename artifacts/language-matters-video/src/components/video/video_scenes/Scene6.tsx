@@ -1,69 +1,96 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-// Scene 6 (15s): "YOUR LANGUAGE IS THE BRIDGE"
+// Scene 6 (19.8s): Call to action — "Your language is not a barrier. It is the bridge."
 export function Scene6() {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 1000), // Bridge image steady
-      setTimeout(() => setPhase(2), 5000), // Final tagline reveal
+      setTimeout(() => setPhase(1), 700),
+      setTimeout(() => setPhase(2), 8000),
+      setTimeout(() => setPhase(3), 14000),
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);
 
   return (
-    <motion.div 
-      className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg-dark)] overflow-hidden"
+    <motion.div
+      className="absolute inset-0 overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, filter: "blur(20px)" }}
-      transition={{ duration: 1, ease: "easeInOut" }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1.5, ease: 'easeInOut' }}
     >
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div 
-          className="absolute inset-0"
-          initial={{ scale: 1.1, rotate: 1 }}
-          animate={{ scale: 1.0, rotate: 0 }}
-          transition={{ duration: 15, ease: "linear" }}
-        >
-          <img 
-            src={`${import.meta.env.BASE_URL}images/bridge.png`} 
-            className="w-full h-full object-cover opacity-70"
-            alt="Bridge" 
-          />
-        </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-dark)] via-[var(--color-bg-dark)]/60 to-transparent" />
-        
-        {/* Animated accent elements */}
-        <motion.div 
-          className="absolute inset-0 mix-blend-overlay opacity-10"
-          animate={{ scale: [1, 1.1, 1], rotate: [0, -2, 0] }}
-          transition={{ duration: 20, ease: "linear", repeat: Infinity }}
-        >
-          <img 
-            src={`${import.meta.env.BASE_URL}images/african_pattern.png`} 
-            className="w-full h-full object-cover"
-            alt="" 
-          />
-        </motion.div>
-      </div>
+      <motion.div
+        className="absolute inset-0"
+        initial={{ scale: 1.0 }}
+        animate={{ scale: 1.08 }}
+        transition={{ duration: 22, ease: 'linear' }}
+      >
+        <img
+          src={`${import.meta.env.BASE_URL}images/s6_cta.png`}
+          className="w-full h-full object-cover"
+          alt="Parent and child reading under tree"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#3D1F0A]/90 via-[#3D1F0A]/50 to-[#3D1F0A]/15" />
+      </motion.div>
 
-      <div className="relative z-10 w-full h-full flex flex-col items-center justify-end pb-32">
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase >= 1 ? 0.22 : 0 }}
+        transition={{ duration: 3.5 }}
+        style={{ background: 'radial-gradient(ellipse at 50% 80%, #E8820C, transparent 60%)' }}
+      />
+
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-16 text-center">
         <motion.div
-          className="overflow-hidden px-12 text-center"
+          className="flex flex-col gap-2 mb-7"
+          initial={{ opacity: 0, y: 16 }}
+          animate={phase >= 1 ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1.0 }}
         >
-          <motion.h2 
-            className="text-[6vw] font-black text-[var(--color-bg-light)] tracking-tight uppercase leading-tight"
-            initial={{ opacity: 0, y: "100%", rotateX: -20 }}
-            animate={phase >= 2 ? { opacity: 1, y: 0, rotateX: 0 } : { opacity: 0, y: "100%", rotateX: -20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 100 }}
-            style={{ transformOrigin: "bottom center" }}
-          >
-            YOUR LANGUAGE IS THE <span className="text-[var(--color-secondary)]">BRIDGE</span>
-          </motion.h2>
+          <p className="text-[2.2vw] text-[#F5EDD6]/80" style={{ fontFamily: 'var(--font-body)' }}>
+            Read in your language. Tell stories. Sing songs.
+          </p>
+          <p className="text-[2.2vw] text-[#F5EDD6]/80" style={{ fontFamily: 'var(--font-body)' }}>
+            Let them see that their words have value.
+          </p>
         </motion.div>
+
+        <motion.div
+          className="w-24 h-[3px] bg-[#E8820C] rounded-full mb-7"
+          initial={{ scaleX: 0 }}
+          animate={phase >= 1 ? { scaleX: 1 } : {}}
+          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+        />
+
+        <motion.p
+          className="text-[2.1vw] text-[#F5EDD6]/80 leading-relaxed max-w-[58%] mb-6"
+          style={{ fontFamily: 'var(--font-body)' }}
+          initial={{ opacity: 0 }}
+          animate={phase >= 2 ? { opacity: 1 } : {}}
+          transition={{ duration: 1.2 }}
+        >
+          At Curious Learning we've designed apps and stories to teach your child
+          to read in the language they know best.
+          Enjoy the stories together — and have fun playing{' '}
+          <span className="text-[#E8820C] font-semibold">Feed the Monster</span>{' '}
+          right alongside them.
+        </motion.p>
+
+        <motion.h2
+          className="text-[4.8vw] font-black text-[#F5EDD6] leading-tight max-w-[55%]"
+          style={{ fontFamily: 'var(--font-display)' }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={phase >= 3 ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 1.2, type: 'spring', damping: 20 }}
+        >
+          Your language is not a barrier.
+          It is{' '}
+          <span className="text-[#E8820C]">the bridge</span>.
+        </motion.h2>
       </div>
     </motion.div>
   );

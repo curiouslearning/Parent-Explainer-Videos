@@ -1,6 +1,0 @@
-file '/home/runner/workspace/artifacts/language-matters-video/public/audio/s1_opening.mp3'
-file '/home/runner/workspace/artifacts/language-matters-video/public/audio/s2_brain.mp3'
-file '/home/runner/workspace/artifacts/language-matters-video/public/audio/s3_research.mp3'
-file '/home/runner/workspace/artifacts/language-matters-video/public/audio/s4_identity.mp3'
-file '/home/runner/workspace/artifacts/language-matters-video/public/audio/s5_reassurance.mp3'
-file '/home/runner/workspace/artifacts/language-matters-video/public/audio/s6_cta.mp3'

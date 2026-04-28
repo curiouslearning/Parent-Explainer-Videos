@@ -1,38 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, Repeat, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import VideoTemplate, { SCENE_DURATIONS } from './VideoTemplate';
 import { useSceneControls } from '@/hooks/useSceneControls';
 
+const BASE = import.meta.env.BASE_URL;
+const SCENE_KEYS = Object.keys(SCENE_DURATIONS) as (keyof typeof SCENE_DURATIONS)[];
+
 const PROGRESS_TICK_MS = 60;
-
-const SCENE_KEYS_ORDERED = Object.keys(SCENE_DURATIONS) as Array<keyof typeof SCENE_DURATIONS>;
-
-const SCENE_START_TIMES_S: Record<string, number> = (() => {
-  let acc = 0;
-  const result: Record<string, number> = {};
-  for (const key of SCENE_KEYS_ORDERED) {
-    result[key] = acc;
-    acc += SCENE_DURATIONS[key] / 1000;
-  }
-  return result;
-})();
-
-interface ControlBarProps {
-  visible: boolean;
-  collapsed: boolean;
-  locked: boolean;
-  playing: boolean;
-  muted: boolean;
-  sceneKeys: string[];
-  activeIndex: number;
-  activeDuration: number;
-  tick: number;
-  onToggleLock: () => void;
-  onJumpTo: (index: number) => void;
-  onToggleCollapsed: () => void;
-  onTogglePlay: () => void;
-  onToggleMute: () => void;
-}
 
 function ProgressSegments({
   sceneKeys,
@@ -45,7 +19,7 @@ function ProgressSegments({
   activeIndex: number;
   activeDuration: number;
   tick: number;
-  onJumpTo: (index: number) => void;
+  onJumpTo: (i: number) => void;
 }) {
   const [elapsed, setElapsed] = useState(0);
 
@@ -84,165 +58,91 @@ function ProgressSegments({
   );
 }
 
-function ControlBar({
-  visible,
-  collapsed,
-  locked,
-  playing,
-  muted,
-  sceneKeys,
-  activeIndex,
-  activeDuration,
-  tick,
-  onToggleLock,
-  onJumpTo,
-  onToggleCollapsed,
-  onTogglePlay,
-  onToggleMute,
-}: ControlBarProps) {
-  return (
-    <div
-      className={`flex items-center gap-3 bg-black/60 backdrop-blur-sm px-5 py-4 transition-all duration-200 ease-out ${
-        visible
-          ? 'translate-y-0 opacity-100 pointer-events-auto'
-          : 'translate-y-full opacity-0 pointer-events-none'
-      }`}
-      aria-hidden={!visible}
-    >
-      <button
-        onClick={onTogglePlay}
-        className="w-14 h-14 flex items-center justify-center text-white bg-white/15 hover:bg-white/25 transition-colors rounded-lg shrink-0"
-        title={playing ? 'Pause' : 'Play'}
-        aria-label={playing ? 'Pause' : 'Play'}
-      >
-        {playing
-          ? <Pause className="w-8 h-8" />
-          : <Play className="w-8 h-8" />}
-      </button>
-
-      <button
-        onClick={onToggleMute}
-        className="w-14 h-14 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors rounded-lg shrink-0"
-        title={muted ? 'Unmute audio' : 'Mute audio'}
-        aria-label={muted ? 'Unmute audio' : 'Mute audio'}
-      >
-        {muted
-          ? <VolumeX className="w-7 h-7" />
-          : <Volume2 className="w-7 h-7" />}
-      </button>
-
-      <div className="w-px self-stretch bg-white/15" aria-hidden="true" />
-
-      <ProgressSegments
-        sceneKeys={sceneKeys}
-        activeIndex={activeIndex}
-        activeDuration={activeDuration}
-        tick={tick}
-        onJumpTo={onJumpTo}
-      />
-
-      <div className="text-xl text-white/60 font-mono tabular-nums shrink-0">
-        {activeIndex + 1}/{sceneKeys.length}
-      </div>
-
-      <button
-        onClick={onToggleLock}
-        className={`w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 ${
-          locked
-            ? 'text-white bg-white/15 hover:bg-white/25'
-            : 'text-white/60 hover:text-white hover:bg-white/10'
-        }`}
-        title={locked ? 'Loop scene: on' : 'Loop scene: off'}
-        aria-label={locked ? 'Loop scene: on' : 'Loop scene: off'}
-        aria-pressed={locked}
-      >
-        <Repeat className="w-8 h-8" />
-      </button>
-
-      <button
-        onClick={onToggleCollapsed}
-        className="w-14 h-14 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors rounded-lg shrink-0"
-        title={collapsed ? 'Show controls' : 'Hide controls'}
-        aria-label={collapsed ? 'Show controls' : 'Hide controls'}
-        aria-expanded={!collapsed}
-      >
-        {collapsed ? <ChevronUp className="w-10 h-10" /> : <ChevronDown className="w-10 h-10" />}
-      </button>
-    </div>
-  );
-}
-
 export default function VideoWithControls() {
   const isIframed = typeof window !== 'undefined' && window.self !== window.top;
 
   const {
-    sceneKeys,
-    activeIndex,
-    locked,
-    mountKey,
-    tick,
-    durations,
-    activeDuration,
-    onSceneChange,
-    jumpTo: jumpToScene,
-    toggleLock,
+    sceneKeys, activeIndex, locked, mountKey, tick,
+    durations, activeDuration, onSceneChange, jumpTo, toggleLock,
   } = useSceneControls(SCENE_DURATIONS);
 
+  // Per-scene audio
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const sceneStartRef = useRef<number>(0);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
+  const lastSceneKeyRef = useRef<string>('');
 
+  // Load the correct scene audio whenever activeIndex changes
+  useEffect(() => {
+    if (!isIframed) return;
+    const sceneKey = SCENE_KEYS[activeIndex];
+    if (!sceneKey || sceneKey === lastSceneKeyRef.current) return;
+    lastSceneKeyRef.current = sceneKey;
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    setAudioReady(false);
+    audio.src = `${BASE}audio/${sceneKey}.mp3`;
+    audio.load();
+    audio.oncanplaythrough = () => {
+      setAudioReady(true);
+      if (playing) audio.play().catch(() => {});
+    };
+  }, [activeIndex, isIframed, playing]);
+
+  // When last scene audio ends: stop, rewind to scene 1
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onEnded = () => {
+      const isLast = activeIndex === SCENE_KEYS.length - 1;
+      if (isLast) {
+        setPlaying(false);
+        // Rewind: jump back to scene 1
+        lastSceneKeyRef.current = '';
+        setAudioReady(false);
+        jumpTo(0);
+      }
+    };
+    audio.addEventListener('ended', onEnded);
+    return () => audio.removeEventListener('ended', onEnded);
+  }, [activeIndex, jumpTo]);
+
+  // Sync play/pause
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing && audioReady) {
+      audio.play().catch(() => {});
+    } else if (!playing) {
+      audio.pause();
+    }
+  }, [playing, audioReady]);
+
+  // Sync mute
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.muted = muted;
+  }, [muted]);
+
+  // jumpTo resets audio src so the new scene loads fresh
+  const handleJumpTo = useCallback((index: number) => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.src = '';
+    }
+    lastSceneKeyRef.current = '';
+    setAudioReady(false);
+    jumpTo(index);
+  }, [jumpTo]);
+
+  // Collapsed bar state
   const sensorRef = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [hovering, setHovering] = useState(false);
   const [tapPinned, setTapPinned] = useState(false);
-
-  const audioSrc = useMemo(
-    () => `${import.meta.env.BASE_URL}audio/narration.mp3`,
-    [],
-  );
-
-  const sceneStartTimes = useMemo(() => SCENE_START_TIMES_S, []);
-
-  const syncAudioToScene = useCallback((index: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const startTime = sceneStartTimes[SCENE_KEYS_ORDERED[index]] ?? 0;
-    audio.currentTime = startTime;
-    sceneStartRef.current = startTime;
-  }, [sceneStartTimes]);
-
-  const jumpTo = useCallback((index: number) => {
-    syncAudioToScene(index);
-    jumpToScene(index);
-  }, [jumpToScene, syncAudioToScene]);
-
-  const togglePlay = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (playing) {
-      audio.pause();
-      setPlaying(false);
-    } else {
-      audio.play().then(() => setPlaying(true)).catch(() => {});
-    }
-  }, [playing]);
-
-  const toggleMute = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.muted = !audio.muted;
-    setMuted(audio.muted);
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const onEnded = () => setPlaying(false);
-    audio.addEventListener('ended', onEnded);
-    return () => audio.removeEventListener('ended', onEnded);
-  }, []);
 
   const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse') setHovering(true);
@@ -250,19 +150,13 @@ export default function VideoWithControls() {
   const handlePointerLeave = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse') setHovering(false);
   }, []);
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (e.pointerType === 'mouse') return;
-      if (collapsed) setTapPinned(true);
-    },
-    [collapsed],
-  );
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse') return;
+    if (collapsed) setTapPinned(true);
+  }, [collapsed]);
   const handleToggleCollapsed = useCallback(() => {
-    setCollapsed((c) => {
-      if (!c) {
-        setHovering(false);
-        setTapPinned(false);
-      }
+    setCollapsed(c => {
+      if (!c) { setHovering(false); setTapPinned(false); }
       return !c;
     });
   }, []);
@@ -280,24 +174,26 @@ export default function VideoWithControls() {
 
   const barVisible = !collapsed || hovering || tapPinned;
 
+  // Export path
   if (!isIframed) return <VideoTemplate />;
 
   return (
-    <div className="relative w-full h-screen">
-      <audio ref={audioRef} src={audioSrc} preload="auto" />
+    <div className="relative w-full h-screen bg-[#3D1F0A]">
+      <audio ref={audioRef} preload="auto" />
 
       <VideoTemplate
         key={mountKey}
         durations={durations}
-        loop
+        loop={locked}
         onSceneChange={onSceneChange}
       />
 
+      {/* Big play button overlay when paused */}
       {!playing && (
         <button
-          onClick={togglePlay}
+          onClick={() => setPlaying(true)}
           className="absolute inset-0 z-40 flex items-center justify-center group"
-          aria-label="Play video with narration"
+          aria-label="Play video"
         >
           <div className="w-24 h-24 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/70 transition-colors border border-white/20">
             <Play className="w-12 h-12 text-white ml-1" />
@@ -305,6 +201,7 @@ export default function VideoWithControls() {
         </button>
       )}
 
+      {/* Sensor + control bar */}
       <div
         ref={sensorRef}
         className="absolute bottom-0 left-0 right-0 z-50 flex flex-col justify-end"
@@ -314,22 +211,76 @@ export default function VideoWithControls() {
         onPointerDown={handlePointerDown}
       >
         <div className="flex-1 w-full" aria-hidden="true" />
-        <ControlBar
-          visible={barVisible}
-          collapsed={collapsed}
-          locked={locked}
-          playing={playing}
-          muted={muted}
-          sceneKeys={sceneKeys}
-          activeIndex={activeIndex}
-          activeDuration={activeDuration}
-          tick={tick}
-          onToggleLock={toggleLock}
-          onJumpTo={jumpTo}
-          onToggleCollapsed={handleToggleCollapsed}
-          onTogglePlay={togglePlay}
-          onToggleMute={toggleMute}
-        />
+
+        <div
+          className={`flex items-center gap-3 bg-black/60 backdrop-blur-sm px-5 py-4 transition-all duration-200 ease-out ${
+            barVisible
+              ? 'translate-y-0 opacity-100 pointer-events-auto'
+              : 'translate-y-full opacity-0 pointer-events-none'
+          }`}
+          aria-hidden={!barVisible}
+        >
+          {/* Play / Pause */}
+          <button
+            onClick={() => setPlaying(p => !p)}
+            className="w-14 h-14 flex items-center justify-center text-white bg-white/15 hover:bg-white/25 transition-colors rounded-lg shrink-0"
+            title={playing ? 'Pause' : 'Play'}
+            aria-label={playing ? 'Pause' : 'Play'}
+          >
+            {playing ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
+          </button>
+
+          {/* Mute */}
+          <button
+            onClick={() => setMuted(m => !m)}
+            className="w-14 h-14 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors rounded-lg shrink-0"
+            title={muted ? 'Unmute' : 'Mute'}
+            aria-label={muted ? 'Unmute' : 'Mute'}
+          >
+            {muted ? <VolumeX className="w-7 h-7" /> : <Volume2 className="w-7 h-7" />}
+          </button>
+
+          <div className="w-px self-stretch bg-white/15" aria-hidden="true" />
+
+          {/* Scene lock */}
+          <button
+            onClick={toggleLock}
+            className={`w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 ${
+              locked
+                ? 'text-white bg-white/15 hover:bg-white/25'
+                : 'text-white/60 hover:text-white hover:bg-white/10'
+            }`}
+            title={locked ? 'Loop scene: on' : 'Loop scene: off'}
+            aria-label={locked ? 'Loop scene: on' : 'Loop scene: off'}
+            aria-pressed={locked}
+          >
+            <Repeat className="w-8 h-8" />
+          </button>
+
+          <div className="w-px self-stretch bg-white/15" aria-hidden="true" />
+
+          <ProgressSegments
+            sceneKeys={sceneKeys}
+            activeIndex={activeIndex}
+            activeDuration={activeDuration}
+            tick={tick}
+            onJumpTo={handleJumpTo}
+          />
+
+          <div className="text-xl text-white/60 font-mono tabular-nums shrink-0">
+            {activeIndex + 1}/{sceneKeys.length}
+          </div>
+
+          <button
+            onClick={handleToggleCollapsed}
+            className="w-14 h-14 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors rounded-lg shrink-0"
+            title={collapsed ? 'Show controls' : 'Hide controls'}
+            aria-label={collapsed ? 'Show controls' : 'Hide controls'}
+            aria-expanded={!collapsed}
+          >
+            {collapsed ? <ChevronUp className="w-10 h-10" /> : <ChevronDown className="w-10 h-10" />}
+          </button>
+        </div>
       </div>
     </div>
   );
