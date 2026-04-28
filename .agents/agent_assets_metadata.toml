@@ -126,6 +126,42 @@ uri = "file://artifacts/not-all-screens-video/public/images/s6_close.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "oQs_JxH0g_O8uCVM3p9wF"
+uri = "file://artifacts/learning-is-everywhere-video/public/images/s1_opening.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "dAoZVKvi0IRKTKPFKVaae"
+uri = "file://artifacts/learning-is-everywhere-video/public/images/s2_learning_around.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "svFyjNTA5LcdFdsf3F7su"
+uri = "file://artifacts/learning-is-everywhere-video/public/images/s3_hours.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "QrT64Mh5eGEG_VjwXagHk"
+uri = "file://artifacts/learning-is-everywhere-video/public/images/s4_answers.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "EJLY6VFVgilT_pCTI6OeK"
+uri = "file://artifacts/learning-is-everywhere-video/public/images/s5_school.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "AXEN5FmQdLy4aA8_n3GZX"
+uri = "file://artifacts/learning-is-everywhere-video/public/images/s6_close.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "UE0wHmp5RBZwnmUXbY6px"
 uri = "file://artifacts/language-matters-video/public/images/family.jpg"
