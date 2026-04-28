@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #1E3A8A; /* Deep Blue */
-  --color-secondary: #047857; /* Forest Green */
-  --color-accent: #F59E0B; /* Warm Amber */
+  --color-primary: #3D1F0A; /* deep warm brown */
+  --color-secondary: #E8820C; /* saffron/golden orange */
+  --color-accent: #2E6B3E; /* forest green */
 
-  --color-bg-light: #FFFBEB; /* Warm White */
-  --color-bg-dark: #1e1e1e;
-  --color-bg-muted: #FEF3C7; /* Soft amber */
+  --color-bg-light: #F5EDD6; /* soft cream */
+  --color-bg-dark: #3D1F0A;
+  --color-bg-muted: #EADCB5;
 
-  --color-text-primary: #1F2937;
-  --color-text-secondary: #4B5563;
-  --color-text-muted: #9CA3AF;
-  --color-text-inverse: #FFFFFF;
+  --color-text-primary: #3D1F0A;
+  --color-text-secondary: #E8820C;
+  --color-text-muted: #2E6B3E;
+  --color-text-inverse: #F5EDD6;
 
-  --font-display: 'DM Serif Display', serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Nunito', sans-serif;
+  --font-body: 'Ubuntu', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 

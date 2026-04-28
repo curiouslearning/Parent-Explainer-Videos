@@ -1,78 +1,54 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
+// Scene 4 (20s): "YOUR LANGUAGE MATTERS"
 export function Scene4() {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 2000),
-      setTimeout(() => setPhase(2), 4000),
-      setTimeout(() => setPhase(3), 6000),
-      setTimeout(() => setPhase(4), 11000),
+      setTimeout(() => setPhase(1), 1000),
+      setTimeout(() => setPhase(2), 12000), // Reveal text
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);
 
   return (
     <motion.div 
-      className="absolute inset-0 flex items-center justify-center bg-[var(--color-secondary)] overflow-hidden"
+      className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg-dark)] overflow-hidden"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 1.05 }}
       transition={{ duration: 0.8, ease: "easeInOut" }}
     >
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-accent)_0%,_transparent_60%)] opacity-20 mix-blend-screen" />
-      </div>
+      <motion.div 
+        className="absolute inset-0"
+        initial={{ scale: 1.05 }}
+        animate={{ scale: 1.0 }}
+        transition={{ duration: 20, ease: "linear" }}
+      >
+        <img 
+          src={`${import.meta.env.BASE_URL}images/child_learning.png`} 
+          className="w-full h-full object-cover opacity-80"
+          alt="Child learning" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-dark)] via-transparent to-transparent opacity-90" />
+      </motion.div>
 
-      <div className="relative z-10 w-full max-w-5xl px-12 text-center">
-        <motion.p
-          className="text-[2.5vw] text-[var(--color-bg-light)]/80 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+      <div className="relative z-10 w-full h-full flex flex-col items-center justify-end pb-24">
+        <motion.div
+          className="text-center overflow-hidden"
         >
-          When a child sees their language written down... it sends a powerful message.
-        </motion.p>
-
-        <div className="flex flex-col gap-6 items-center mb-16">
-          <motion.div
-            className="bg-white text-[var(--color-primary)] px-10 py-4 rounded-full text-[3.5vw] font-black shadow-xl"
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: phase >= 1 ? 1 : 0, scale: phase >= 1 ? 1 : 0.8, y: phase >= 1 ? 0 : 20 }}
-            transition={{ type: "spring", bounce: 0.5 }}
+          <motion.h1
+            className="text-[7vw] font-black text-[var(--color-bg-light)] tracking-tight uppercase"
+            initial={{ opacity: 0, y: "100%", rotateX: -20 }}
+            animate={phase >= 2 ? { opacity: 1, y: 0, rotateX: 0 } : { opacity: 0, y: "100%", rotateX: -20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 100 }}
+            style={{ transformOrigin: "bottom center" }}
           >
-            Your language matters.
-          </motion.div>
-
-          <motion.div
-            className="bg-[var(--color-bg-light)] text-[var(--color-primary)] px-10 py-4 rounded-full text-[3.5vw] font-black shadow-xl"
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: phase >= 2 ? 1 : 0, scale: phase >= 2 ? 1 : 0.8, y: phase >= 2 ? 0 : 20 }}
-            transition={{ type: "spring", bounce: 0.5 }}
-          >
-            Your family matters.
-          </motion.div>
-
-          <motion.div
-            className="bg-[var(--color-accent)] text-white px-12 py-5 rounded-full text-[4.5vw] font-black shadow-2xl"
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: phase >= 3 ? 1 : 0, scale: phase >= 3 ? 1 : 0.8, y: phase >= 3 ? 0 : 20 }}
-            transition={{ type: "spring", bounce: 0.5 }}
-          >
-            You matter.
-          </motion.div>
-        </div>
-
-        <motion.p
-          className="text-[2vw] text-white font-medium max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: phase >= 4 ? 1 : 0, y: phase >= 4 ? 0 : 20 }}
-          transition={{ duration: 0.8 }}
-        >
-          Children who feel that sense of pride are more engaged, more confident, and more willing to take risks with their learning.
-        </motion.p>
+            YOUR LANGUAGE <span className="text-[var(--color-secondary)]">MATTERS</span>
+          </motion.h1>
+        </motion.div>
       </div>
     </motion.div>
   );

@@ -1,5 +1,52 @@
 uploads = []
-generated = []
+
+[[generated]]
+id = "z5WQRy6JiaMLBuDOQEyD_"
+uri = "file://artifacts/language-matters-video/public/images/brain_metaphor.png"
+type = "image"
+title = "brain neural connections"
+
+[[generated]]
+id = "32vyzQYzDTTcZFUD2s2yR"
+uri = "file://artifacts/language-matters-video/public/images/puzzle_pieces.png"
+type = "image"
+title = "two puzzle pieces"
+
+[[generated]]
+id = "oaxGGav_n9L5JbU9-dg17"
+uri = "file://artifacts/language-matters-video/public/images/house_foundation.png"
+type = "image"
+title = "house foundation building"
+
+[[generated]]
+id = "RvWeiJI9ThSDt42neGSwd"
+uri = "file://artifacts/language-matters-video/public/images/bridge.png"
+type = "image"
+title = "bridge golden light"
+
+[[generated]]
+id = "oef5VhQM-KtGPxmfT4iZB"
+uri = "file://artifacts/language-matters-video/public/images/african_pattern.png"
+type = "image"
+title = "african abstract pattern"
+
+[[generated]]
+id = "-NPKC-f4YrgbWjYGAaCgK"
+uri = "file://artifacts/language-matters-video/public/images/mother_reading.png"
+type = "image"
+title = "African mother reading child"
+
+[[generated]]
+id = "4qoNTGqAwJ8rvQnAbolC6"
+uri = "file://artifacts/language-matters-video/public/images/school_children.png"
+type = "image"
+title = "African school children learning"
+
+[[generated]]
+id = "0JchAsYZDOky4RjeLP5Z0"
+uri = "file://artifacts/language-matters-video/public/images/child_learning.png"
+type = "image"
+title = "African child reading book"
 
 [[outputs]]
 id = "UE0wHmp5RBZwnmUXbY6px"
@@ -24,3 +71,21 @@ id = "_qPgbUkd5ap3v_kyqfAMv"
 uri = "file://artifacts/language-matters-video/public/images/foundation.jpg"
 type = "image"
 title = "building a strong brick house foundation warm sunlight"
+
+[[outputs]]
+id = "RoyJidPk-ndDxH4bcPNRO"
+uri = "file://artifacts/language-matters-video/public/images/mother_reading.jpg"
+type = "image"
+title = "African mother reading to child in a warm setting"
+
+[[outputs]]
+id = "Wg6XoWgaXeH69lMU9vQ6Z"
+uri = "file://artifacts/language-matters-video/public/images/school_children.jpg"
+type = "image"
+title = "African children at school studying"
+
+[[outputs]]
+id = "rRGW6-IbWtAyeMFQ65UHm"
+uri = "file://artifacts/language-matters-video/public/images/child_learning.jpg"
+type = "image"
+title = "African child smiling and learning close up"
