@@ -1,0 +1,26 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "UE0wHmp5RBZwnmUXbY6px"
+uri = "file://artifacts/language-matters-video/public/images/family.jpg"
+type = "image"
+title = "happy family reading together in a cozy home in Africa warm lighting"
+
+[[outputs]]
+id = "C_o06yVfHZWtcd1AqYvPJ"
+uri = "file://artifacts/language-matters-video/public/images/brain.jpg"
+type = "image"
+title = "child looking thoughtful learning connecting ideas warm lighting"
+
+[[outputs]]
+id = "8D31hJiwVS0mB4iXRXtNw"
+uri = "file://artifacts/language-matters-video/public/images/school.jpg"
+type = "image"
+title = "children in a vibrant classroom in Africa reading books together"
+
+[[outputs]]
+id = "_qPgbUkd5ap3v_kyqfAMv"
+uri = "file://artifacts/language-matters-video/public/images/foundation.jpg"
+type = "image"
+title = "building a strong brick house foundation warm sunlight"

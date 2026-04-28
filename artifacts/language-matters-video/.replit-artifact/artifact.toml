@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/language-matters-video/"
+title = "Why Your Language Matters Most"
+version = "1.0.0"
+id = "artifacts/language-matters-video"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/language-matters-video/" ]
+localPort = 22288
+
+[services.development]
+run = "pnpm --filter @workspace/language-matters-video run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/language-matters-video", "run", "build" ]
+publicDir = "artifacts/language-matters-video/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22288"
+BASE_PATH = "/language-matters-video/"
