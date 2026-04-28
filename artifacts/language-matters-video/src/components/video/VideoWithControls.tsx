@@ -1,14 +1,28 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, Repeat } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronDown, ChevronUp, Repeat, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import VideoTemplate, { SCENE_DURATIONS } from './VideoTemplate';
 import { useSceneControls } from '@/hooks/useSceneControls';
 
 const PROGRESS_TICK_MS = 60;
 
+const SCENE_KEYS_ORDERED = Object.keys(SCENE_DURATIONS) as Array<keyof typeof SCENE_DURATIONS>;
+
+const SCENE_START_TIMES_S: Record<string, number> = (() => {
+  let acc = 0;
+  const result: Record<string, number> = {};
+  for (const key of SCENE_KEYS_ORDERED) {
+    result[key] = acc;
+    acc += SCENE_DURATIONS[key] / 1000;
+  }
+  return result;
+})();
+
 interface ControlBarProps {
   visible: boolean;
   collapsed: boolean;
   locked: boolean;
+  playing: boolean;
+  muted: boolean;
   sceneKeys: string[];
   activeIndex: number;
   activeDuration: number;
@@ -16,6 +30,8 @@ interface ControlBarProps {
   onToggleLock: () => void;
   onJumpTo: (index: number) => void;
   onToggleCollapsed: () => void;
+  onTogglePlay: () => void;
+  onToggleMute: () => void;
 }
 
 function ProgressSegments({
@@ -48,7 +64,7 @@ function ProgressSegments({
     <div className="flex-1 flex items-center gap-1.5">
       {sceneKeys.map((key, i) => {
         const isActive = i === activeIndex;
-        const fill = isActive ? progress * 100 : 0;
+        const fill = isActive ? progress * 100 : i < activeIndex ? 100 : 0;
         return (
           <button
             key={key}
@@ -72,6 +88,8 @@ function ControlBar({
   visible,
   collapsed,
   locked,
+  playing,
+  muted,
   sceneKeys,
   activeIndex,
   activeDuration,
@@ -79,10 +97,12 @@ function ControlBar({
   onToggleLock,
   onJumpTo,
   onToggleCollapsed,
+  onTogglePlay,
+  onToggleMute,
 }: ControlBarProps) {
   return (
     <div
-      className={`flex items-center gap-3 bg-black/50 backdrop-blur-sm px-5 py-4 transition-all duration-200 ease-out ${
+      className={`flex items-center gap-3 bg-black/60 backdrop-blur-sm px-5 py-4 transition-all duration-200 ease-out ${
         visible
           ? 'translate-y-0 opacity-100 pointer-events-auto'
           : 'translate-y-full opacity-0 pointer-events-none'
@@ -90,17 +110,25 @@ function ControlBar({
       aria-hidden={!visible}
     >
       <button
-        onClick={onToggleLock}
-        className={`w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 ${
-          locked
-            ? 'text-white bg-white/15 hover:bg-white/25'
-            : 'text-white/60 hover:text-white hover:bg-white/10'
-        }`}
-        title={locked ? 'Loop current scene: on' : 'Loop current scene: off'}
-        aria-label={locked ? 'Loop current scene: on' : 'Loop current scene: off'}
-        aria-pressed={locked}
+        onClick={onTogglePlay}
+        className="w-14 h-14 flex items-center justify-center text-white bg-white/15 hover:bg-white/25 transition-colors rounded-lg shrink-0"
+        title={playing ? 'Pause' : 'Play'}
+        aria-label={playing ? 'Pause' : 'Play'}
       >
-        <Repeat className="w-8 h-8" />
+        {playing
+          ? <Pause className="w-8 h-8" />
+          : <Play className="w-8 h-8" />}
+      </button>
+
+      <button
+        onClick={onToggleMute}
+        className="w-14 h-14 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors rounded-lg shrink-0"
+        title={muted ? 'Unmute audio' : 'Mute audio'}
+        aria-label={muted ? 'Unmute audio' : 'Mute audio'}
+      >
+        {muted
+          ? <VolumeX className="w-7 h-7" />
+          : <Volume2 className="w-7 h-7" />}
       </button>
 
       <div className="w-px self-stretch bg-white/15" aria-hidden="true" />
@@ -116,6 +144,20 @@ function ControlBar({
       <div className="text-xl text-white/60 font-mono tabular-nums shrink-0">
         {activeIndex + 1}/{sceneKeys.length}
       </div>
+
+      <button
+        onClick={onToggleLock}
+        className={`w-14 h-14 flex items-center justify-center transition-colors rounded-lg shrink-0 ${
+          locked
+            ? 'text-white bg-white/15 hover:bg-white/25'
+            : 'text-white/60 hover:text-white hover:bg-white/10'
+        }`}
+        title={locked ? 'Loop scene: on' : 'Loop scene: off'}
+        aria-label={locked ? 'Loop scene: on' : 'Loop scene: off'}
+        aria-pressed={locked}
+      >
+        <Repeat className="w-8 h-8" />
+      </button>
 
       <button
         onClick={onToggleCollapsed}
@@ -142,14 +184,65 @@ export default function VideoWithControls() {
     durations,
     activeDuration,
     onSceneChange,
-    jumpTo,
+    jumpTo: jumpToScene,
     toggleLock,
   } = useSceneControls(SCENE_DURATIONS);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const sceneStartRef = useRef<number>(0);
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
 
   const sensorRef = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [hovering, setHovering] = useState(false);
   const [tapPinned, setTapPinned] = useState(false);
+
+  const audioSrc = useMemo(
+    () => `${import.meta.env.BASE_URL}audio/narration.mp3`,
+    [],
+  );
+
+  const sceneStartTimes = useMemo(() => SCENE_START_TIMES_S, []);
+
+  const syncAudioToScene = useCallback((index: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const startTime = sceneStartTimes[SCENE_KEYS_ORDERED[index]] ?? 0;
+    audio.currentTime = startTime;
+    sceneStartRef.current = startTime;
+  }, [sceneStartTimes]);
+
+  const jumpTo = useCallback((index: number) => {
+    syncAudioToScene(index);
+    jumpToScene(index);
+  }, [jumpToScene, syncAudioToScene]);
+
+  const togglePlay = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+      setPlaying(false);
+    } else {
+      audio.play().then(() => setPlaying(true)).catch(() => {});
+    }
+  }, [playing]);
+
+  const toggleMute = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.muted = !audio.muted;
+    setMuted(audio.muted);
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onEnded = () => setPlaying(false);
+    audio.addEventListener('ended', onEnded);
+    return () => audio.removeEventListener('ended', onEnded);
+  }, []);
 
   const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse') setHovering(true);
@@ -191,12 +284,27 @@ export default function VideoWithControls() {
 
   return (
     <div className="relative w-full h-screen">
+      <audio ref={audioRef} src={audioSrc} preload="auto" />
+
       <VideoTemplate
         key={mountKey}
         durations={durations}
         loop
         onSceneChange={onSceneChange}
       />
+
+      {!playing && (
+        <button
+          onClick={togglePlay}
+          className="absolute inset-0 z-40 flex items-center justify-center group"
+          aria-label="Play video with narration"
+        >
+          <div className="w-24 h-24 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/70 transition-colors border border-white/20">
+            <Play className="w-12 h-12 text-white ml-1" />
+          </div>
+        </button>
+      )}
+
       <div
         ref={sensorRef}
         className="absolute bottom-0 left-0 right-0 z-50 flex flex-col justify-end"
@@ -210,6 +318,8 @@ export default function VideoWithControls() {
           visible={barVisible}
           collapsed={collapsed}
           locked={locked}
+          playing={playing}
+          muted={muted}
           sceneKeys={sceneKeys}
           activeIndex={activeIndex}
           activeDuration={activeDuration}
@@ -217,6 +327,8 @@ export default function VideoWithControls() {
           onToggleLock={toggleLock}
           onJumpTo={jumpTo}
           onToggleCollapsed={handleToggleCollapsed}
+          onTogglePlay={togglePlay}
+          onToggleMute={toggleMute}
         />
       </div>
     </div>
