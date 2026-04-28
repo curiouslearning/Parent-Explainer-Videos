@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, Repeat, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import VideoTemplate, { SCENE_DURATIONS } from './VideoTemplate';
 import { useSceneControls } from '@/hooks/useSceneControls';
@@ -7,15 +7,9 @@ const PROGRESS_TICK_MS = 60;
 
 const SCENE_KEYS_ORDERED = Object.keys(SCENE_DURATIONS) as Array<keyof typeof SCENE_DURATIONS>;
 
-const SCENE_START_TIMES_S: Record<string, number> = (() => {
-  let acc = 0;
-  const result: Record<string, number> = {};
-  for (const key of SCENE_KEYS_ORDERED) {
-    result[key] = acc;
-    acc += SCENE_DURATIONS[key] / 1000;
-  }
-  return result;
-})();
+function getSceneAudioSrc(sceneKey: string): string {
+  return `${import.meta.env.BASE_URL}audio/${sceneKey}.mp3`;
+}
 
 interface ControlBarProps {
   visible: boolean;
@@ -188,29 +182,42 @@ export default function VideoWithControls() {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
 
+  // Track current scene key so we can detect changes
+  const currentAudioKeyRef = useRef<string>(SCENE_KEYS_ORDERED[0]);
+
   const sensorRef = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [hovering, setHovering] = useState(false);
   const [tapPinned, setTapPinned] = useState(false);
 
-  const audioSrc = useMemo(
-    () => `${import.meta.env.BASE_URL}audio/narration.mp3`,
-    [],
-  );
-
-  const sceneStartTimes = useMemo(() => SCENE_START_TIMES_S, []);
-
-  const syncAudioToScene = useCallback((index: number) => {
+  // When scene changes, swap audio to the new scene's file and play it if we're playing
+  const handleSceneChange = useCallback((rawKey: string) => {
+    onSceneChange(rawKey);
+    const clean = rawKey.replace(/_r[12]$/, '');
+    currentAudioKeyRef.current = clean;
     const audio = audioRef.current;
     if (!audio) return;
-    const startTime = sceneStartTimes[SCENE_KEYS_ORDERED[index]] ?? 0;
-    audio.currentTime = startTime;
-  }, [sceneStartTimes]);
+    audio.src = getSceneAudioSrc(clean);
+    audio.currentTime = 0;
+    if (playing) {
+      audio.play().catch(() => {});
+    }
+  }, [onSceneChange, playing]);
 
+  // Jump to scene: swap audio and play if active
   const jumpTo = useCallback((index: number) => {
-    syncAudioToScene(index);
+    const key = SCENE_KEYS_ORDERED[index];
+    currentAudioKeyRef.current = key;
+    const audio = audioRef.current;
+    if (audio) {
+      audio.src = getSceneAudioSrc(key);
+      audio.currentTime = 0;
+      if (playing) {
+        audio.play().catch(() => {});
+      }
+    }
     jumpToScene(index);
-  }, [jumpToScene, syncAudioToScene]);
+  }, [jumpToScene, playing]);
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
@@ -219,6 +226,11 @@ export default function VideoWithControls() {
       audio.pause();
       setPlaying(false);
     } else {
+      // Make sure the audio src is set to the current scene
+      if (!audio.src || audio.src === window.location.href) {
+        audio.src = getSceneAudioSrc(currentAudioKeyRef.current);
+        audio.currentTime = 0;
+      }
       audio.play().then(() => setPlaying(true)).catch(() => {});
     }
   }, [playing]);
@@ -230,13 +242,18 @@ export default function VideoWithControls() {
     setMuted(audio.muted);
   }, []);
 
+  // When audio ends naturally (last scene finished), just mark as stopped
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    const onEnded = () => setPlaying(false);
+    const onEnded = () => {
+      // Only stop playing state if we're on the last scene
+      const isLastScene = activeIndex === sceneKeys.length - 1;
+      if (isLastScene) setPlaying(false);
+    };
     audio.addEventListener('ended', onEnded);
     return () => audio.removeEventListener('ended', onEnded);
-  }, []);
+  }, [activeIndex, sceneKeys.length]);
 
   const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse') setHovering(true);
@@ -274,17 +291,19 @@ export default function VideoWithControls() {
 
   const barVisible = !collapsed || hovering || tapPinned;
 
-  if (!isIframed) return <VideoTemplate />;
+  // Export path: no controls, no loop
+  if (!isIframed) return <VideoTemplate loop={false} />;
 
   return (
     <div className="relative w-full h-screen">
-      <audio ref={audioRef} src={audioSrc} preload="auto" />
+      {/* Audio element — src is managed imperatively via ref */}
+      <audio ref={audioRef} preload="auto" />
 
       <VideoTemplate
         key={mountKey}
         durations={durations}
-        loop
-        onSceneChange={onSceneChange}
+        loop={false}
+        onSceneChange={handleSceneChange}
       />
 
       {!playing && (
