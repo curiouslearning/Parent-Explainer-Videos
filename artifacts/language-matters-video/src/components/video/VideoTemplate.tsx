@@ -14,7 +14,7 @@ export const SCENE_DURATIONS: Record<string, number> = {
   s3_research: 25464,
   s4_identity: 25200,
   s5_reassurance: 25464,
-  s6_cta: 19704,
+  s6_cta: 23000,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
