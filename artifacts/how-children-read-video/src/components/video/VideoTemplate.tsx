@@ -16,7 +16,7 @@ export const SCENE_DURATIONS: Record<string, number> = {
   s4_early_reader: 52656,
   s5_curious_reader: 52656,
   s6_emerging_reader: 46248,
-  s7_close: 10848,
+  s7_close: 15000,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
