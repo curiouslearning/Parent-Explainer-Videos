@@ -86,7 +86,10 @@ export default function VideoWithControls({ onEnded }: VideoWithControlsProps = 
     const audio = audioRef.current;
     if (!audio) return;
     const handleEnded = () => {
-      if (activeIndexRef.current === SCENE_KEYS_ORDERED.length - 1) {
+      const idx = activeIndexRef.current;
+      if (idx < SCENE_KEYS_ORDERED.length - 1) {
+        jumpToScene(idx + 1);
+      } else {
         setPlayingBoth(false);
         onEnded?.();
         window.parent?.postMessage({ type: 'VIDEO_ENDED' }, '*');
@@ -94,7 +97,7 @@ export default function VideoWithControls({ onEnded }: VideoWithControlsProps = 
     };
     audio.addEventListener('ended', handleEnded);
     return () => audio.removeEventListener('ended', handleEnded);
-  }, [setPlayingBoth, onEnded]);
+  }, [setPlayingBoth, onEnded, jumpToScene]);
 
   useEffect(() => {
     if (!playing) return;
@@ -132,7 +135,7 @@ export default function VideoWithControls({ onEnded }: VideoWithControlsProps = 
         key={mountKey}
         durations={durations}
         loop={false}
-        playing={playing}
+        playing={false}
         onSceneChange={handleSceneChange}
       />
 

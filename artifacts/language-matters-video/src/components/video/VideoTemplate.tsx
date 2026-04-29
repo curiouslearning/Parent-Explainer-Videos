@@ -9,12 +9,12 @@ import { Scene5 } from './video_scenes/Scene5';
 import { Scene6 } from './video_scenes/Scene6';
 
 export const SCENE_DURATIONS: Record<string, number> = {
-  s1_opening: 23520 + 4000,
+  s1_opening: 23520,
   s2_brain: 27000,
   s3_research: 26160,
   s4_identity: 23304,
   s5_reassurance: 24720,
-  s6_cta: 19848 + 4000,
+  s6_cta: 19848,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {

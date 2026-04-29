@@ -82,14 +82,17 @@ export default function VideoWithControls() {
     const audio = audioRef.current;
     if (!audio) return;
     const handleEnded = () => {
-      if (activeIndexRef.current === SCENE_KEYS_ORDERED.length - 1) {
+      const idx = activeIndexRef.current;
+      if (idx < SCENE_KEYS_ORDERED.length - 1) {
+        jumpToScene(idx + 1);
+      } else {
         setPlayingBoth(false);
         window.parent?.postMessage({ type: 'VIDEO_ENDED' }, '*');
       }
     };
     audio.addEventListener('ended', handleEnded);
     return () => audio.removeEventListener('ended', handleEnded);
-  }, [setPlayingBoth]);
+  }, [setPlayingBoth, jumpToScene]);
 
   useEffect(() => {
     if (!playing) return;
@@ -127,7 +130,7 @@ export default function VideoWithControls() {
         key={mountKey}
         durations={durations}
         loop={false}
-        playing={playing}
+        playing={false}
         onSceneChange={handleSceneChange}
       />
 

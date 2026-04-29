@@ -14,7 +14,7 @@ export const SCENE_DURATIONS: Record<string, number> = {
   s3_hours: 53520,
   s4_answers: 61656,
   s5_school: 35016,
-  s6_close: 26608,
+  s6_close: 22608,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {

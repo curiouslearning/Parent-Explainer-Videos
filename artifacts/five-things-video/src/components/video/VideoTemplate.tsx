@@ -10,13 +10,13 @@ import { Scene6 } from './video_scenes/Scene6';
 import { Scene7 } from './video_scenes/Scene7';
 
 export const SCENE_DURATIONS = {
-  s1_opening: 25248 + 4000,
+  s1_opening: 25248,
   s2_talk: 56568,
   s3_questions: 47256,
   s4_stories: 57456,
   s5_teach: 49368,
   s6_practise: 65616,
-  s7_close: 23808 + 4000,
+  s7_close: 23808,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
