@@ -29,13 +29,15 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
 export default function VideoTemplate({
   durations = SCENE_DURATIONS,
   loop = true,
+  playing = true,
   onSceneChange,
 }: {
   durations?: Record<string, number>;
   loop?: boolean;
+  playing?: boolean;
   onSceneChange?: (sceneKey: string) => void;
 } = {}) {
-  const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop });
+  const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop, playing });
 
   useEffect(() => {
     onSceneChange?.(currentSceneKey);

@@ -362,11 +362,11 @@ function VideoPlayer({
           </div>
         ) : video.type === 'inline' ? (
           <div className="w-full h-full">
-            <VideoWithControls autoplay onEnded={onWatched} />
+            <VideoWithControls onEnded={onWatched} />
           </div>
         ) : (
           <iframe
-            src={`${video.path}?autoplay=1`}
+            src={video.path}
             className="w-full h-full"
             allow="autoplay; fullscreen; encrypted-media"
             allowFullScreen

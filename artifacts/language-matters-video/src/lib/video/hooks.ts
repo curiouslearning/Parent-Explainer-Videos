@@ -17,6 +17,7 @@ export interface UseVideoPlayerOptions {
   durations: SceneDurations;
   onVideoEnd?: () => void;
   loop?: boolean;
+  playing?: boolean;
 }
 
 export interface UseVideoPlayerReturn {
@@ -27,7 +28,7 @@ export interface UseVideoPlayerReturn {
 }
 
 export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerReturn {
-  const { durations, onVideoEnd, loop = true } = options;
+  const { durations, onVideoEnd, loop = true, playing = true } = options;
 
   // Captured once on mount -- durations must be a static object
   const sceneKeys = useRef(Object.keys(durations)).current;
@@ -37,19 +38,35 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
   const [currentScene, setCurrentScene] = useState(0);
   const [hasEnded, setHasEnded] = useState(false);
 
+  // Track elapsed time within the current scene so pause/resume works correctly
+  const elapsedRef = useRef(0);
+  const timerStartRef = useRef<number | null>(null);
+
   // Start recording on mount
   useEffect(() => {
     window.startRecording?.();
   }, []);
 
-  // Scene advancement -- loops independently of recording
+  // Scene advancement -- pauses when playing=false
   useEffect(() => {
+    if (!playing) {
+      if (timerStartRef.current !== null) {
+        elapsedRef.current += Date.now() - timerStartRef.current;
+        timerStartRef.current = null;
+      }
+      return;
+    }
+
     if (hasEnded && !loop) return;
 
     const currentDuration = durationsArray[currentScene];
+    const remaining = Math.max(0, currentDuration - elapsedRef.current);
 
+    timerStartRef.current = Date.now();
     const timer = setTimeout(() => {
-      // Last scene just finished playing
+      elapsedRef.current = 0;
+      timerStartRef.current = null;
+
       if (currentScene >= totalScenes - 1) {
         if (!hasEnded) {
           window.stopRecording?.();
@@ -62,10 +79,16 @@ export function useVideoPlayer(options: UseVideoPlayerOptions): UseVideoPlayerRe
       } else {
         setCurrentScene(prev => prev + 1);
       }
-    }, currentDuration);
+    }, remaining);
 
-    return () => clearTimeout(timer);
-  }, [currentScene, totalScenes, durationsArray, hasEnded, loop, onVideoEnd]);
+    return () => {
+      clearTimeout(timer);
+      if (timerStartRef.current !== null) {
+        elapsedRef.current += Date.now() - timerStartRef.current;
+        timerStartRef.current = null;
+      }
+    };
+  }, [currentScene, totalScenes, durationsArray, hasEnded, loop, onVideoEnd, playing]);
 
   return {
     currentScene,
