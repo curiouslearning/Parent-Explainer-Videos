@@ -1,31 +1,32 @@
 kind = "video"
-previewPath = "/parent-video-hub/"
-title = "Parent Explainer Videos"
-version = "1.0.0"
-id = "artifacts/learning-is-everywhere-video"
-router = "path"
+  previewPath = "/"
+  title = "Parent Explainer Videos"
+  version = "1.0.0"
+  id = "artifacts/learning-is-everywhere-video"
+  router = "path"
 
-[[integratedSkills]]
-name = "video-js"
-version = "1.0.0"
+  [[integratedSkills]]
+  name = "video-js"
+  version = "1.0.0"
 
-[[services]]
-name = "web"
-paths = [ "/parent-video-hub/" ]
-localPort = 23165
+  [[services]]
+  name = "web"
+  paths = [ "/" ]
+  localPort = 23165
 
-[services.development]
-run = "pnpm --filter @workspace/learning-is-everywhere-video run dev"
+  [services.development]
+  run = "pnpm --filter @workspace/learning-is-everywhere-video run dev"
 
-[services.production]
-build = [ "pnpm", "--filter", "@workspace/learning-is-everywhere-video", "run", "build" ]
-publicDir = "artifacts/learning-is-everywhere-video/dist/public"
-serve = "static"
+  [services.production]
+  build = [ "pnpm", "--filter", "@workspace/learning-is-everywhere-video", "run", "build" ]
+  publicDir = "artifacts/learning-is-everywhere-video/dist/public"
+  serve = "static"
 
-[[services.production.rewrites]]
-from = "/*"
-to = "/index.html"
+  [[services.production.rewrites]]
+  from = "/*"
+  to = "/index.html"
 
-[services.env]
-PORT = "23165"
-BASE_PATH = "/parent-video-hub/"
+  [services.env]
+  PORT = "23165"
+  BASE_PATH = "/"
+  
