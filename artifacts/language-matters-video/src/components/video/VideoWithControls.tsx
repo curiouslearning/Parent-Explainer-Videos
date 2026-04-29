@@ -109,6 +109,16 @@ export default function VideoWithControls() {
     return () => { try { screen.orientation?.unlock?.(); } catch {} };
   }, []);
 
+  useEffect(() => {
+    if (!playing) return;
+    let wl: { release(): Promise<void> } | null = null;
+    (navigator as { wakeLock?: { request(t: string): Promise<{ release(): Promise<void> }> } })
+      .wakeLock?.request('screen')
+      .then(lock => { wl = lock; })
+      .catch(() => {});
+    return () => { wl?.release().catch(() => {}); };
+  }, [playing]);
+
   return (
     <div className="relative w-full h-screen bg-black">
       <audio ref={audioRef} preload="auto" />

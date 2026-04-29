@@ -292,6 +292,15 @@ function VideoPlayer({
   }, []);
 
   useEffect(() => {
+    let wl: { release(): Promise<void> } | null = null;
+    (navigator as { wakeLock?: { request(t: string): Promise<{ release(): Promise<void> }> } })
+      .wakeLock?.request('screen')
+      .then(lock => { wl = lock; })
+      .catch(() => {});
+    return () => { wl?.release().catch(() => {}); };
+  }, []);
+
+  useEffect(() => {
     const mq = window.matchMedia('(orientation: portrait)');
     const handler = (e: MediaQueryListEvent) => setIsPortrait(e.matches);
     mq.addEventListener('change', handler);
