@@ -55,6 +55,7 @@ export default function VideoWithControls() {
       audio.pause();
       setPlayingBoth(false);
     } else {
+      screen.orientation?.lock?.('landscape').catch?.(() => {});
       if (!audio.src || audio.src === window.location.href) {
         audio.src = getSceneAudioSrc(currentAudioKeyRef.current);
         audio.load();
@@ -103,6 +104,10 @@ export default function VideoWithControls() {
     }, 100);
     return () => clearInterval(id);
   }, [playing]);
+
+  useEffect(() => {
+    return () => { try { screen.orientation?.unlock?.(); } catch {} };
+  }, []);
 
   return (
     <div className="relative w-full h-screen bg-black">

@@ -276,6 +276,28 @@ function VideoPlayer({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<{ destroy(): void } | null>(null);
 
+  const isMobileDevice = useRef(
+    typeof window !== 'undefined' && window.innerWidth < 768
+  ).current;
+
+  const [isPortrait, setIsPortrait] = useState(
+    () => typeof window !== 'undefined'
+      ? window.matchMedia('(orientation: portrait)').matches
+      : true
+  );
+
+  useEffect(() => {
+    screen.orientation?.lock?.('landscape').catch?.(() => {});
+    return () => { try { screen.orientation?.unlock?.(); } catch {} };
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(orientation: portrait)');
+    const handler = (e: MediaQueryListEvent) => setIsPortrait(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
   useEffect(() => {
     if (video.type !== 'internal') return;
     const handler = (e: MessageEvent) => {
@@ -330,31 +352,57 @@ function VideoPlayer({
     ? `https://www.youtube.com/embed/${video.youtubeId}?enablejsapi=1&autoplay=1&rel=0&modestbranding=1`
     : '';
 
+  const showTitleBar = !isMobileDevice || isPortrait;
+  const showFloatingBack = isMobileDevice && !isPortrait;
+  const showRotateHint = isMobileDevice && isPortrait;
+
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      <div className="flex items-center gap-3 px-4 py-3 bg-[#1a0905] shrink-0 border-b border-white/10">
-        <button
-          onClick={onClose}
-          className="w-11 h-11 flex items-center justify-center text-white hover:bg-white/10 active:bg-white/20 rounded-full transition-colors shrink-0"
-          aria-label="Back to menu"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-        </button>
-        <span className="font-display text-white font-semibold truncate text-sm md:text-base">
-          {video.num}. {video.title}
-        </span>
-      </div>
+      {showTitleBar && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-[#1a0905] shrink-0 border-b border-white/10">
+          <button
+            onClick={onClose}
+            className="w-11 h-11 flex items-center justify-center text-white hover:bg-white/10 active:bg-white/20 rounded-full transition-colors shrink-0"
+            aria-label="Back to menu"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+          <span className="font-display text-white font-semibold truncate text-sm md:text-base">
+            {video.num}. {video.title}
+          </span>
+        </div>
+      )}
 
-      <div className="flex-1 flex items-center justify-center bg-black overflow-hidden">
+      {showRotateHint && (
+        <div className="flex items-center justify-center gap-1.5 py-1.5 bg-amber-950/70 text-amber-200/90 text-xs shrink-0">
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Rotate device for best view</span>
+        </div>
+      )}
+
+      <div className="flex-1 relative bg-black overflow-hidden">
+        {showFloatingBack && (
+          <button
+            onClick={onClose}
+            className="absolute top-3 left-3 z-50 w-11 h-11 flex items-center justify-center text-white bg-black/50 hover:bg-black/70 active:bg-black/80 rounded-full backdrop-blur-sm border border-white/20 transition-colors"
+            aria-label="Back to menu"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
+        )}
+
         {video.type === 'youtube' ? (
-          <div className="w-full h-full flex items-center justify-center p-0">
+          <div className="w-full h-full flex items-center justify-center">
             <iframe
               ref={iframeRef}
               src={ytSrc}
               className="w-full h-full"
-              style={{ maxHeight: 'calc(100vh - 56px)' }}
               allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
               allowFullScreen
               title={video.title}
