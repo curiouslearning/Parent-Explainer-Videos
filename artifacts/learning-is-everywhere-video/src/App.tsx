@@ -114,19 +114,19 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F5EDD6]">
-      <header className="bg-[#3D1F0A] text-white px-6 py-10 text-center">
+      <header className="bg-[#3D1F0A] text-white px-6 py-6 md:py-10 text-center">
         <div className="max-w-3xl mx-auto">
-          <h1 className="font-display text-4xl md:text-5xl font-extrabold text-[#E8820C] mb-2 tracking-tight">
+          <h1 className="font-display text-3xl md:text-5xl font-extrabold text-[#E8820C] mb-2 tracking-tight">
             Curious Learning
           </h1>
-          <p className="text-xl text-white/90 font-medium">Parent Explainer Videos</p>
+          <p className="text-lg md:text-xl text-white/90 font-medium">Parent Explainer Videos</p>
           <p className="text-sm text-white/55 mt-2">
             A short video series to help you support your child's literacy journey
           </p>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
+      <main className="max-w-5xl mx-auto px-4 py-6 md:py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {VIDEOS.map(v => (
             <VideoCard
@@ -172,7 +172,7 @@ function VideoCard({
         'group relative flex flex-col rounded-2xl overflow-hidden text-left transition-all duration-200 bg-white',
         isComingSoon
           ? 'opacity-60 cursor-not-allowed shadow-sm ring-1 ring-[#EADCB5]'
-          : 'shadow-md cursor-pointer hover:-translate-y-1 hover:shadow-xl',
+          : 'shadow-md cursor-pointer hover:-translate-y-1 hover:shadow-xl active:scale-[0.97] active:shadow-md',
         watched
           ? 'ring-2 ring-[#2E6B3E]'
           : isComingSoon
@@ -205,10 +205,10 @@ function VideoCard({
         )}
 
         {!isComingSoon && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-colors duration-200">
-            <div className="w-14 h-14 rounded-full bg-white/0 group-hover:bg-white/90 flex items-center justify-center scale-90 group-hover:scale-100 transition-all duration-200">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/30 group-active:bg-black/40 transition-colors duration-200">
+            <div className="w-12 h-12 rounded-full bg-white/70 group-hover:bg-white/95 group-active:bg-white flex items-center justify-center transition-all duration-200 shadow-md">
               <svg
-                className="w-7 h-7 text-[#3D1F0A] ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                className="w-6 h-6 text-[#3D1F0A] ml-0.5"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -335,7 +335,7 @@ function VideoPlayer({
       <div className="flex items-center gap-3 px-4 py-3 bg-[#1a0905] shrink-0 border-b border-white/10">
         <button
           onClick={onClose}
-          className="w-9 h-9 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors shrink-0"
+          className="w-11 h-11 flex items-center justify-center text-white hover:bg-white/10 active:bg-white/20 rounded-full transition-colors shrink-0"
           aria-label="Back to menu"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

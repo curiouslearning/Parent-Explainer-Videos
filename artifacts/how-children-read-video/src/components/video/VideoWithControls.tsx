@@ -102,15 +102,18 @@ export default function VideoWithControls() {
         )}
       </button>
 
-      <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none">
+      <div
+        className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
         <div className="px-3 pb-2">
           <button
             onClick={(e) => { e.stopPropagation(); rewind(); }}
-            className="pointer-events-auto w-9 h-9 flex items-center justify-center text-white bg-black/50 hover:bg-black/70 rounded-full backdrop-blur-sm border border-white/20 transition-colors"
+            className="pointer-events-auto w-11 h-11 flex items-center justify-center text-white bg-black/50 hover:bg-black/70 active:bg-black/80 rounded-full backdrop-blur-sm border border-white/20 transition-colors"
             title="Restart"
             aria-label="Restart from beginning"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-5 h-5" />
           </button>
         </div>
         <div className="w-full h-1.5 bg-white/25 pointer-events-auto">
